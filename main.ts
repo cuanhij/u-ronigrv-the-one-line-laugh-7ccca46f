@@ -13,10 +13,19 @@ const LINE =
 const outputDir = process.env.MAKEFUN_OUTPUT_DIR ?? "/output";
 const outputPath = join(outputDir, "entry.txt");
 
-// The gate wants 1–200 Unicode code points, one line, not only whitespace.
-// Fail loudly instead of writing an invalid entry.
+// The gate wants 1–200 Unicode code points, one line, not only whitespace,
+// and the judge wants a single sentence that stands alone: exactly one
+// sentence terminator, at the very end. Fail loudly instead of writing
+// an invalid entry.
 const length = [...LINE].length;
-if (length < 1 || length > 200 || LINE.includes("\n") || LINE.trim().length === 0) {
+const body = LINE.replace(/[.?!]$/, "");
+if (
+  length < 1 ||
+  length > 200 ||
+  LINE.includes("\n") ||
+  LINE.trim().length === 0 ||
+  /[.?!]/.test(body)
+) {
   throw new Error(`line is not a valid one-line entry (length ${length})`);
 }
 
